@@ -1,7 +1,9 @@
-/* .App {
-  font-family: sans-serif;
-  text-align: center;
-} */
+.App {
+  font-family: San Francisco, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+body {
+  padding-top: 100px;
+}
 .swap {
   cursor: pointer;
 }

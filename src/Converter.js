@@ -13,20 +13,33 @@ class Converter extends Component {
   handleSelect = (e) => {
     this.setState(
       {
-        [e.target.name]: e.target.value
+        [e.target.name]: e.target.value,
+        result: null
       },
       this.calculate
     );
-    console.log(this.state.convertTo);
   };
   handleInput = (e) => {
     this.setState(
       {
-        amount: e.target.value
+        amount: e.target.value,
+        result: null
       },
       this.calculate
     );
-    console.log(this.state.amount);
+  };
+  handleSwap = (e) => {
+    const base = this.state.base;
+    const convertTo = this.state.convertTo;
+    e.preventDefault();
+    this.setState(
+      {
+        convertTo: base,
+        base: convertTo,
+        result: null
+      },
+      this.calculate
+    );
   };
   calculate = () => {
     const amount = this.state.amount;
@@ -37,7 +50,6 @@ class Converter extends Component {
         .then((res) => res.json())
         .then((data) => {
           const date = data.date;
-          console.log(data);
           const result = (data.rates[this.state.convertTo] * amount).toFixed(4);
           this.setState({
             result,
@@ -54,12 +66,12 @@ class Converter extends Component {
       <div className="container">
         <div className="row">
           <div className="col-lg-6 mx-auto">
-            <div className="card card-body">
+            <div className="card card-body shadow-lg p-3 mb-5 bg-white rounded">
               <h5>
                 {amount} {base} is equivalent to
               </h5>
               <h2>
-                {result} {convertTo}
+                {result === null ? "Calculating..." : result} {convertTo}
               </h2>
               <p>As of {new Date(date).toString("dddd, MMMM ,yyyy")}</p>
               <div className="row">
@@ -87,7 +99,7 @@ class Converter extends Component {
 
                   <form className="form-inline mb-4">
                     <input
-                      value={result}
+                      value={result === null ? "Calculating..." : result}
                       disabled={true}
                       className="form-control form-control-lg mx-3"
                     />
@@ -106,7 +118,9 @@ class Converter extends Component {
                   </form>
                 </div>
                 <div className="col-lg-2 col-md-2 col-sm-2 align-self-center">
-                  <h1 className="swap">&#8595;&#8593;</h1>
+                  <h1 onClick={this.handleSwap} className="swap">
+                    &#8595;&#8593;
+                  </h1>
                 </div>
               </div>
             </div>

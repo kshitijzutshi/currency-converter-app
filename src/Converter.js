@@ -5,32 +5,76 @@ class Converter extends Component {
     currencies: ["USD", "AUD", "SGD", "PHP", "EUR", "INR"],
     base: "USD",
     amount: "",
-    convertTo: "",
+    convertTo: "EUR",
     result: "",
-    date: ""
+    date: "01/01/1970"
+  };
+
+  handleSelect = (e) => {
+    this.setState(
+      {
+        [e.target.name]: e.target.value
+      },
+      this.calculate
+    );
+    console.log(this.state.convertTo);
+  };
+  handleInput = (e) => {
+    this.setState(
+      {
+        amount: e.target.value
+      },
+      this.calculate
+    );
+    console.log(this.state.amount);
+  };
+  calculate = () => {
+    const amount = this.state.amount;
+    if (amount === isNaN) {
+      return;
+    } else {
+      fetch(`https://api.exchangeratesapi.io/latest?base=${this.state.base}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const date = data.date;
+          console.log(data);
+          const result = (data.rates[this.state.convertTo] * amount).toFixed(4);
+          this.setState({
+            result,
+            date
+          });
+        });
+    }
   };
 
   render() {
     const { currencies, base, amount, convertTo, result, date } = this.state;
+    console.log(`DATE IS ${date}`);
     return (
       <div className="container">
         <div className="row">
           <div className="col-lg-6 mx-auto">
             <div className="card card-body">
               <h5>
-                {amount} {base} is equivalanet to
+                {amount} {base} is equivalent to
               </h5>
               <h2>
                 {result} {convertTo}
               </h2>
-              <p>As of {date}</p>
+              <p>As of {new Date(date).toString("dddd, MMMM ,yyyy")}</p>
               <div className="row">
                 <div className="col-lg-10 col-md-8 col-sm-2">
                   <form className="form-inline mb-4">
-                    <input className="form-control form-control-lg mx-3" />
+                    <input
+                      type="number"
+                      value={amount}
+                      onChange={this.handleInput}
+                      className="form-control form-control-lg mx-3"
+                    />
                     <select
                       name="base"
                       value={base}
+                      onChange={this.handleSelect}
                       className="form-control form-control-lg"
                     >
                       {currencies.map((currency) => (
@@ -42,10 +86,15 @@ class Converter extends Component {
                   </form>
 
                   <form className="form-inline mb-4">
-                    <input className="form-control form-control-lg mx-3" />
+                    <input
+                      value={result}
+                      disabled={true}
+                      className="form-control form-control-lg mx-3"
+                    />
                     <select
                       name="convertTo"
                       value={convertTo}
+                      onChange={this.handleSelect}
                       className="form-control form-control-lg"
                     >
                       {currencies.map((currency) => (
